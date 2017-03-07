@@ -1,11 +1,11 @@
 <?php
 return array(
 	//'配置项'=>'配置值'
-    'DB_TYPE'=>'mysql',
-    'DB_HOST'=>'localhost',
-    'DB_NAME'=>'CES',
-    'DB_USER'=>'root',
-    'DB_PWD'=>'scce317ces/back.',
+    'DB_TYPE'=>'mysqli',
+    'DB_HOST'=>'scce.mysqldb.chinacloudapi.cn',
+    'DB_NAME'=>'ces',
+    'DB_USER'=>'scce%ces',
+    'DB_PWD'=>'CES317back',
     // 'DB_PORT'=>,
     'DB_PREFIX'=>'tb_',
     'DB_CHARSET'=>'utf8',

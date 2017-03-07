@@ -23,7 +23,7 @@ class MenuController extends Controller
     public function getAccessToken()
     {
         $upMenu = new MenuController();
-        $upMenu->url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=$upMenu->appidTest&secret=$upMenu->appsecretTest";
+        $upMenu->url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=$upMenu->appid&secret=$upMenu->appsecret";
         $output = $this->https_request($upMenu->url);
         $jsoninfo = json_decode($output, true);
         return $jsoninfo["access_token"];

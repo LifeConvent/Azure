@@ -1,0 +1,12 @@
+[ 2017-03-07T13:42:25+08:00 ] ::1 /Azure/CESBack/index.php/GroupSend
+INFO: [ app_init ] --START--
+INFO: Run Behavior\BuildLiteBehavior [ RunTime:0.000008s ]
+INFO: [ app_init ] --END-- [ RunTime:0.000376s ]
+ERR: 无法加载模块:GroupSend
+
+[ 2017-03-07T13:42:50+08:00 ] ::1 /Azure/CESBack/index.php/Index
+INFO: [ app_init ] --START--
+INFO: Run Behavior\BuildLiteBehavior [ RunTime:0.000006s ]
+INFO: [ app_init ] --END-- [ RunTime:0.000204s ]
+ERR: 无法加载模块:Index
+

@@ -569,17 +569,194 @@ class MethodController extends Controller
                 }
                 /**如果输出汉字有乱码，则需将输出内容用iconv函数进行编码转换，如下将gb2312编码转为utf-8编码输出*/
                 //echo iconv('utf-8','gb2312', $val)."\t";
-
             }
         }
         return $erp_orders_id;
     }
 
+    public function upload()
+    {
+        if (!empty($_FILES)) {
+            $tempFile = $_FILES['file']['tmp_name'];
+            $targetFile = "Public/uploads/" . $_FILES['file']['name'];
+            if (move_uploaded_file($tempFile, $targetFile)) {
+                //上传成功后直接输出新页面进行数据库导入
+//                $this->redirect('DataManage/sysCourse');
+//                ----------
+            }
+        }
+    }
+
+    //第一种方案
+//    public function startUploads()
+//    {
+//        $match_relation = I('post.m_r');
+//        $file_name = I('post.f_n');
+//        $table_name = I('post.t_n');
+//
+////        $match_relation = 'tag_id-学号,tag_name-姓名';
+////        $file_name = 'test.XLS';
+////        $table_name = 'user_tag';
+//        //解析匹配关系
+//        $match_relation = explode(',', $match_relation);
+//        $data = $this->import_excel('Public/uploads/' . $file_name);
+////        dump($data);
+//        $match = $field = $count = null;
+//        foreach ($match_relation AS $key => $val) {
+//            $match[$key] = explode('-', $val);
+//        }
+//        $num = 0;
+//        foreach ($data[1] AS $key => $val) {
+//            foreach ($match AS $k => $v) {
+//                if ($v[1] == $val) {
+//                    $data[1][$key] = $val[0];
+//                    $field[$num] = $v[0];
+//                    $count[$num++] = $key;
+//                }
+//            }
+//        }
+//        $table = M($table_name);
+//
+////        $result['status'] = 'success';
+////        echo json_encode($result);
+//        for ($j = 2; $j < sizeof($data); $j++) {
+//            $condition = null;
+//            for ($i = 0; $i < sizeof($field); $i++) {
+//                $condition[$field[$i]] = $data[$j][$count[$i]];
+//            }
+//            $res = $table->where($condition)->select();
+//            if (!$res) {
+////                dump($condition);
+//                $res = $table->add($condition);
+//                if ($res) {
+//                    $result['status'] = 'success';
+//                } else {
+//                    $result['status'] = 'failed';
+//                    $result['message'] = $res;
+//                }
+//            }
+//        }
+//        if ($result['status'] == null) {
+//            $result['status'] = 'failed';
+//            $result['message'] = '无数据更新!';
+//        }
+//        exit(json_encode($result));
+//    }
+
+    //第二种方案.发过来数据(新增临时文件夹名称-时间戳)后断开连接,之后开始轮询请求查询取得文件中的数据解析,JOSN包含处理进度
+    public function startUploads()
+    {
+
+//        $match_relation = 'tag_id-学号,tag_name-姓名';
+//        $file_name = 'test.XLS';
+//        $table_name = 'user_tag';
+//        $time = 'user_tag';
+
+        $time = I('post.time');
+        $file_name = I('post.f_n');
+        $table_name = I('post.t_n');
+        $match_relation = I('post.m_r');
+
+        $result['status'] = 'success';
+        $result['percent'] = '0%';
+        $this->write($time, json_encode($result));
+
+        //解析匹配关系
+        $match_relation = explode(',', $match_relation);
+        $data = $this->import_excel('Public/uploads/' . $file_name);
+//        dump($data);
+        $match = $field = $count = null;
+        foreach ($match_relation AS $key => $val) {
+            $match[$key] = explode('-', $val);
+        }
+        $num = 0;
+        foreach ($data[1] AS $key => $val) {
+            foreach ($match AS $k => $v) {
+                if ($v[1] == $val) {
+                    $data[1][$key] = $val[0];
+                    $field[$num] = $v[0];
+                    $count[$num++] = $key;
+                }
+            }
+        }
+        $table = M($table_name);
+
+//        $result['status'] = 'success';
+//        echo json_encode($result);
+        $result = null;
+        for ($j = 2; $j < sizeof($data); $j++) {
+            $condition = null;
+            for ($i = 0; $i < sizeof($field); $i++) {
+                $condition[$field[$i]] = $data[$j][$count[$i]];
+            }
+            $percent = (float)$j / (sizeof($data) - 1);
+            $res = $table->where($condition)->select();
+            if (!$res) {
+//                dump($condition);
+                $res = $table->add($condition);
+                if ($res) {
+                    $result['status'] = 'success';
+                    $result['percent'] = ($percent * 100) . '%';
+                } else {
+                    $result['status'] = 'failed';
+                    $result['message'] = $res;
+                }
+                $this->write($time, json_encode($result));
+            }
+        }
+        if ($result == null) {
+            $result['status'] = 'success';
+            $result['message'] = '无数据更新!';
+            $result['percent'] = '100%';
+            $this->write($time, json_encode($result));
+        }
+        exit(json_encode($result));
+    }
+
+    public function deleteFile()
+    {
+        $time = I('post.time');
+        $file_name = I('post.f_n');
+        unlink("Public/file/" . $time . ".txt");
+        unlink("Public/uploads/" . $file_name);
+    }
+
+    public function getFile()
+    {
+        $time = I('post.time');
+        exit($this->read($time));
+    }
 
     public function importTest()
     {
-        $data = $this->import_excel('Public/file/admin1.xls');
+        $data = $this->import_excel('Public/uploads/13级成绩.xls');
         dump($data);
+    }
+
+    //获取数据库数据表结构
+    public function getTableStruct()
+    {
+        $db = M();
+        $res = $db->query($sql = 'show tables');
+        $col = null;
+        foreach ($res AS $key => $val) {
+            $field = $val['tables_in_ces'];
+            $field = substr($field, 3, strlen($field) - 3);
+            $col[$key] = $field;
+        }
+        return $col;
+    }
+
+    //获取数据库数据表字段
+    public function getTableFiled()
+    {
+        $field = I('post.table_name');
+        $file_name = I('post.file_name');
+        $data = $this->import_excel('Public/uploads/' . $file_name);
+        $result['status'] = 'success';
+        $result['file_field'] = $data[1];
+        $result['data'] = M($field)->getDbFields();
+        exit(json_encode($result));
     }
 
     public function outTest()
@@ -619,7 +796,7 @@ class MethodController extends Controller
 
     public function read($userid = null)
     {
-        $userid = 'test';
+//        $userid = 'test';
         $result = file_get_contents("Public/file/" . $userid . ".txt");
         return $result;
     }

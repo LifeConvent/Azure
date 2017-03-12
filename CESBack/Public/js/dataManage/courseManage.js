@@ -47,7 +47,7 @@ function upload_next(id) {
                         //获取数据表中的字段名,调整对应关系
                         $list = "<div><div><div style='float:left;' class='col-sm-6'><button class='btn btn-info'>数据库表中字段名</button></div><div style='float:left;' class='col-sm-6'><button class='btn btn-info'>对应德EXCEL表中字段名</button></div></div>";
                         for (var i = 0; i < field.length; i++) {
-                            $list += " <textarea rows='1' style='visibility:hidden'></textarea><div><div style='float:left;' class='col-sm-6'><input disabled='' type='text' class='form-control' value='" + field[i] + "'></div>";
+                            $list += "<textarea rows='1' style='visibility:hidden'></textarea><div><div style='float:left;' class='col-sm-6'><input disabled='' type='text' class='form-control' value='" + field[i] + "'></div>";
                             //创建select
                             $select = "<div style='float:left;' class='col-sm-6'><select id='field_match" + (i + 1) + "' class='form-control'>";
                             $select += "<option value='" + null + "' >  无 </option>";
@@ -74,9 +74,9 @@ function upload_next(id) {
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    alert(XMLHttpRequest);
-                    alert(textStatus);
-                    alert(errorThrown);
+                    //alert(XMLHttpRequest);
+                    //alert(textStatus);
+                    //alert(errorThrown);
                     $.scojs_message('网络连接发生未知错误，请稍后再试！', $.scojs_message.TYPE_ERROR);
                 }
             });

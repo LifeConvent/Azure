@@ -38,7 +38,7 @@ class ContentReplaceBehavior {
             '__PUBLIC__'    =>  __ROOT__.'/Public',// 站点公共目录
             '__KEY__'    =>  'Ia0CtpywryfU5VGNAlk23s8ctM-99v7we2HZmkVuh_szDz3dinL9aQ9gqslBTZk2',
             '__HOST__'      => 'http://scce.chinacloudsites.cn/',
-//            '__HOST__'      => 'http://localhost/',
+//            '__HOST__'      => 'http://localhost/Azure/',
         );
         // 允许用户自定义模板的字符串替换
         if(is_array(C('TMPL_PARSE_STRING')) )
